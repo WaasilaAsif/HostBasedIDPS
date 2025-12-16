@@ -1,2 +1,0 @@
-This file simulates a suspicious file for IDPS testing.
-Potential threat detected!

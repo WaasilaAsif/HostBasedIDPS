@@ -6,10 +6,10 @@ import threading
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from watchdog.events import FileCreatedEvent, FileDeletedEvent, FileMovedEvent, FileModifiedEvent
-
+from response import ResponseEngine
 from monitor import monitor_network_connections, monitor_system_processes
 from detector import AdvancedAnomalyDetector
-
+from idps_gui import gui_log
 
 class IDPSEventHandler(FileSystemEventHandler):
     def __init__(self, ignore_patterns=None, anomaly_detector=None):
@@ -57,8 +57,9 @@ class IDPSEventHandler(FileSystemEventHandler):
             return
         feature_vector = self._get_event_vector(event)
         if feature_vector is not None:
-            self.anomaly_detector.add_event(feature_vector)
+            self.anomaly_detector.add_event(feature_vector, event.src_path)
         print(f"Alert! {event.src_path} has been created.")
+        gui_log(f"File modified: {event.src_path}")
         self.log_event("created", event.src_path)
 
     def on_deleted(self, event):
@@ -66,8 +67,9 @@ class IDPSEventHandler(FileSystemEventHandler):
             return
         feature_vector = self._get_event_vector(event)
         if feature_vector is not None:
-            self.anomaly_detector.add_event(feature_vector)
+            self.anomaly_detector.add_event(feature_vector, event.src_path)
         print(f"Alert! {event.src_path} has been deleted.")
+        gui_log(f"File deleted: {event.src_path}")
         self.log_event("deleted", event.src_path)
 
     def on_moved(self, event):
@@ -75,8 +77,9 @@ class IDPSEventHandler(FileSystemEventHandler):
             return
         feature_vector = self._get_event_vector(event)
         if feature_vector is not None:
-            self.anomaly_detector.add_event(feature_vector)
+            self.anomaly_detector.add_event(feature_vector, event.src_path)
         print(f"Alert! {event.src_path} has been moved to {event.dest_path}.")
+        gui_log(f"File moved: {event.src_path} -> {event.dest_path}")
         self.log_event("moved", f"{event.src_path} -> {event.dest_path}")
 
     def on_modified(self, event):
@@ -84,40 +87,104 @@ class IDPSEventHandler(FileSystemEventHandler):
             return
         feature_vector = self._get_event_vector(event)
         if feature_vector is not None:
-            self.anomaly_detector.add_event(feature_vector)
+            self.anomaly_detector.add_event(feature_vector, event.src_path)
         print(f"Alert! {event.src_path} has been modified.")
+        gui_log(f"File modified: {event.src_path}")
         self.log_event("modified", event.src_path)
 
 
+# def main():
+#     # Path to the idps_test directory
+#     idps_test_path = os.path.join(
+#         os.path.dirname(os.path.abspath(__file__)),
+#         "idps_test"
+#     )
+
+#     paths = [idps_test_path]
+#     ignore_patterns = ["*.tmp", "*.log"]
+
+#     # 🔥 1. RESPONSE ENGINE (FIRST)
+#     response_engine = ResponseEngine(
+#         quarantine_dir="./quarantine",
+#         dry_run=True  # set False only after testing
+#     )
+
+#     # 🔥 2. ANOMALY DETECTOR (SINGLE INSTANCE)
+#     anomaly_detector = AdvancedAnomalyDetector(
+#         threshold=10,
+#         time_window=60,
+#         response_engine=response_engine
+#     )
+
+#     # 🔥 3. EVENT HANDLER USES SAME DETECTOR
+#     event_handler = IDPSEventHandler(
+#         ignore_patterns=ignore_patterns,
+#         anomaly_detector=anomaly_detector
+#     )
+
+#     observer = Observer()
+
+#     for path in paths:
+#         observer.schedule(event_handler, path, recursive=True)
+
+#     observer.start()
+
+#     # 🔥 4. MONITOR THREADS
+#     network_monitor_thread = threading.Thread(
+#         target=monitor_network_connections,
+#         daemon=True
+#     )
+#     process_monitor_thread = threading.Thread(
+#         target=monitor_system_processes,
+#         daemon=True
+#     )
+
+#     network_monitor_thread.start()
+#     process_monitor_thread.start()
+
+#     try:
+#         while True:
+#             time.sleep(1)
+#     except KeyboardInterrupt:
+#         observer.stop()
+
+#     observer.join()
 def main():
-    # Path to the idps_test directory in the root folder
-    idps_test_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "idps_test")
-    paths = [idps_test_path]
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    idps_test_path = os.path.join(base_dir, "idps_test")
+
     ignore_patterns = ["*.tmp", "*.log"]
-    anomaly_detector = AdvancedAnomalyDetector(threshold=10, time_window=60)
-    event_handler = IDPSEventHandler(ignore_patterns=ignore_patterns, anomaly_detector=anomaly_detector)
+
+    response_engine = ResponseEngine(
+        quarantine_dir="./quarantine",
+        dry_run=False  # 🔥 SET FALSE TO ACTUALLY PREVENT
+    )
+
+    anomaly_detector = AdvancedAnomalyDetector(
+        threshold=10,
+        time_window=60,
+        response_engine=response_engine
+    )
+
+    event_handler = IDPSEventHandler(
+        ignore_patterns=ignore_patterns,
+        anomaly_detector=anomaly_detector
+    )
+
     observer = Observer()
-
-    for path in paths:
-        observer.schedule(event_handler, path, recursive=True)
-
+    observer.schedule(event_handler, idps_test_path, recursive=True)
     observer.start()
 
-    network_monitor_thread = threading.Thread(target=monitor_network_connections)
-    network_monitor_thread.start()
+    threading.Thread(target=monitor_network_connections, daemon=True).start()
+    threading.Thread(target=monitor_system_processes, daemon=True).start()
 
-    process_monitor_thread = threading.Thread(target=monitor_system_processes)
-    process_monitor_thread.start()
-
-    
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         observer.stop()
+
     observer.join()
-    network_monitor_thread.join()
-    process_monitor_thread.join()
 
 
 if __name__ == "__main__":
