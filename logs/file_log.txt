@@ -741,3 +741,14 @@
 2025-12-16 14:07:23 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_0.txt
 2025-12-16 14:07:23 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_7.txt
 2025-12-16 14:07:23 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_2.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_3.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_9.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_4.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\burst_test.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_1.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_5.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_6.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\ransom_sim\victim_8.txt
+2025-12-16 14:08:05 - modified - D:\HostBasedIDPS\idps_test\ransom_sim
+2025-12-16 14:08:05 - modified - D:\HostBasedIDPS\idps_test\benign.txt
+2025-12-16 14:08:05 - deleted - D:\HostBasedIDPS\idps_test\benign.txt
