@@ -1,5 +1,6 @@
 import os
 import sys
+#not used was gonna add cli config later but no time
 import time
 import fnmatch
 import threading
@@ -49,7 +50,10 @@ class IDPSEventHandler(FileSystemEventHandler):
     
     def log_event(self, event_type, path):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-        with open("./logs/file_log.txt", "a") as log_file:
+        log_path = "./logs"
+        os.makedirs(log_path, exist_ok=True)
+       # with open("./logs/file_log.txt", "a") as log_file:
+        with open(os.path.join(log_path, "file_log.txt"), "a") as log_file:
             log_file.write(f"{timestamp} - {event_type} - {path}\n")
 
     def on_created(self, event):
@@ -59,7 +63,7 @@ class IDPSEventHandler(FileSystemEventHandler):
         if feature_vector is not None:
             self.anomaly_detector.add_event(feature_vector, event.src_path)
         print(f"Alert! {event.src_path} has been created.")
-        gui_log(f"File modified: {event.src_path}")
+        gui_log(f"File created: {event.src_path}")
         self.log_event("created", event.src_path)
 
     def on_deleted(self, event):
@@ -92,63 +96,6 @@ class IDPSEventHandler(FileSystemEventHandler):
         gui_log(f"File modified: {event.src_path}")
         self.log_event("modified", event.src_path)
 
-
-# def main():
-#     # Path to the idps_test directory
-#     idps_test_path = os.path.join(
-#         os.path.dirname(os.path.abspath(__file__)),
-#         "idps_test"
-#     )
-
-#     paths = [idps_test_path]
-#     ignore_patterns = ["*.tmp", "*.log"]
-
-#     # 🔥 1. RESPONSE ENGINE (FIRST)
-#     response_engine = ResponseEngine(
-#         quarantine_dir="./quarantine",
-#         dry_run=True  # set False only after testing
-#     )
-
-#     # 🔥 2. ANOMALY DETECTOR (SINGLE INSTANCE)
-#     anomaly_detector = AdvancedAnomalyDetector(
-#         threshold=10,
-#         time_window=60,
-#         response_engine=response_engine
-#     )
-
-#     # 🔥 3. EVENT HANDLER USES SAME DETECTOR
-#     event_handler = IDPSEventHandler(
-#         ignore_patterns=ignore_patterns,
-#         anomaly_detector=anomaly_detector
-#     )
-
-#     observer = Observer()
-
-#     for path in paths:
-#         observer.schedule(event_handler, path, recursive=True)
-
-#     observer.start()
-
-#     # 🔥 4. MONITOR THREADS
-#     network_monitor_thread = threading.Thread(
-#         target=monitor_network_connections,
-#         daemon=True
-#     )
-#     process_monitor_thread = threading.Thread(
-#         target=monitor_system_processes,
-#         daemon=True
-#     )
-
-#     network_monitor_thread.start()
-#     process_monitor_thread.start()
-
-#     try:
-#         while True:
-#             time.sleep(1)
-#     except KeyboardInterrupt:
-#         observer.stop()
-
-#     observer.join()
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     idps_test_path = os.path.join(base_dir, "idps_test")
@@ -156,8 +103,7 @@ def main():
     ignore_patterns = ["*.tmp", "*.log"]
 
     response_engine = ResponseEngine(
-        quarantine_dir="./quarantine",
-        dry_run=False  # 🔥 SET FALSE TO ACTUALLY PREVENT
+        quarantine_di
     )
 
     anomaly_detector = AdvancedAnomalyDetector(

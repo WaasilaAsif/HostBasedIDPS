@@ -1,10 +1,5 @@
-Perfect — thank you for sharing the full implementation. I now have all 7 Python modules, the GUI logic, test suite, and requirements.
 
-Below is your **comprehensive, production-ready `README.md`**, written to reflect *exactly* what your code does — no assumptions, no fluff — with deep technical accuracy, clear pedagogy, and professional polish.
-
----
-
-# 🛡️ AI-Powered Intrusion Detection & Prevention System (IDPS)
+#  AI-Powered Intrusion Detection & Prevention System (IDPS)
 
 > *A lightweight, real-time hybrid IDPS that combines behavioral anomaly detection (Isolation Forest + burst analysis) with automated response (quarantine, lock, kill, block) and live visualization — built for research, education, and defensive prototyping.*
 
@@ -13,22 +8,22 @@ Below is your **comprehensive, production-ready `README.md`**, written to reflec
 
 ---
 
-## 🔍 Introduction
+##  Introduction
 
 This project implements a **hybrid (signature + anomaly-based) Intrusion Detection and Prevention System** in pure Python, designed to detect and *prevent* malicious activity on a local host — including ransomware-like behavior, rapid file tampering, or suspicious process/network patterns.
 
 Unlike static signature-based tools, this IDPS uses **unsupervised machine learning (Isolation Forest)** to learn normal file-event behavior *on-the-fly*, while simultaneously applying **burst-based heuristics** (e.g., ≥10 file modifications in 60 seconds) for immediate threat escalation.
 
-### ✅ Key Capabilities
-- 📁 Real-time file system monitoring (create/delete/move/modify) via `watchdog`
-- 📊 Live anomaly detection using adaptive `IsolationForest`
-- 🧠 Hybrid threat detection: **ML anomaly** + **event burst**
-- 🛡️ Automated response: *lock*, *quarantine*, *kill process*, *lock directory*, *block IP*
-- 🖥️ Tkinter-based live dashboard with timestamped event streaming
-- 📈 Background system monitoring (CPU/memory spikes, new network connections)
-- 🧪 Built-in test suite simulating benign and malicious behavior (including ransomware emulation)
+###   Key Capabilities
+-  Real-time file system monitoring (create/delete/move/modify) via `watchdog`
+-  Live anomaly detection using adaptive `IsolationForest`
+-  Hybrid threat detection: **ML anomaly** + **event burst**
+-  Automated response: *lock*, *quarantine*, *kill process*, *lock directory*, *block IP*
+-  Tkinter-based live dashboard with timestamped event streaming
+-  Background system monitoring (CPU/memory spikes, new network connections)
+-  Built-in test suite simulating benign and malicious behavior (including ransomware emulation)
 
-### ⚙️ Core Technologies
+### Core Technologies
 | Component | Tool/Library |
 |---------|--------------|
 | ML Engine | `scikit-learn==1.2.2` (Isolation Forest) |
@@ -40,7 +35,7 @@ Unlike static signature-based tools, this IDPS uses **unsupervised machine learn
 
 ---
 
-## 📂 Project Structure Overview
+## Project Structure Overview
 
 ```
 .
@@ -60,7 +55,7 @@ Unlike static signature-based tools, this IDPS uses **unsupervised machine learn
 
 ---
 
-## 🧩 Detailed File Explanations
+##  Detailed File Explanations
 
 Each module is explained **function-by-function and class-by-class**, reflecting your *actual* implementation.
 
@@ -98,22 +93,22 @@ Implements the `AdvancedAnomalyDetector`, which fuses **unsupervised ML** and **
   3. Prunes old events outside `time_window`.
   4. Retrains model if `train_interval` elapsed.
   5. **Performs two checks**:
-     - ✅ **ML Anomaly**: Uses trained `IsolationForest` to predict `[-1 → anomaly]`.
-     - ✅ **Burst**: `len(event_queue) >= threshold`.
+     -  **ML Anomaly**: Uses trained `IsolationForest` to predict `[-1 → anomaly]`.
+     -  **Burst**: `len(event_queue) >= threshold`.
   6. If either triggers → calls `_handle_threat(path, event_count)`.
 
 - **`_handle_threat(path, event_count)`**  
-  **Intelligent, escalation-based response** (✅ your enhanced version):
+  **Intelligent, escalation-based response** (  your enhanced version):
   - Gathers *all* unique affected files in current window (`affected_files = {p for ..., p in event_queue}`).
-  - 🟡 **Medium Threat** (`event_count ≥ threshold`):  
+  - **Medium Threat** (`event_count ≥ threshold`):  
     → `lock_file(f)` for *every* affected file (chmod `0o400`).
-  - 🔴 **High Threat** (`event_count ≥ 2 * threshold`):  
+  - **High Threat** (`event_count ≥ 2 * threshold`):  
     → `quarantine_file(f)` for all files  
     → `lock_directory(dir_path)` (chmod folder to `0o555`, files to `0o400`)  
     → `kill_offending_process(dir_path)` — scans all open file handles, kills any process with files in `dir_path`  
     → Clears `event_queue` to prevent repeated triggers.
 
-> 💡 **Why this matters**: Unlike naive per-file reactions, your detector *clusters related events* and escalates *proportionally to severity* — critical for stopping ransomware that hits many files rapidly.
+>  **Why this matters**: Unlike naive per-file reactions, your detector *clusters related events* and escalates *proportionally to severity* — critical for stopping ransomware that hits many files rapidly.
 
 ---
 
@@ -152,7 +147,7 @@ Extends `watchdog`’s event handler to extract features and feed the detector.
 #### Function: `main()`
 
 1. Sets up `ResponseEngine(quarantine_dir="./quarantine", dry_run=False)`  
-   ⚠️ `dry_run=False` = **real prevention enabled** (⚠️ use with caution).  
+   `dry_run=False` = **real prevention enabled** (⚠️ use with caution).  
 2. Instantiates **single shared** `AdvancedAnomalyDetector` (threshold=10, window=60s).  
 3. Configures `IDPSEventHandler` with detector + ignore patterns.  
 4. Starts `watchdog.Observer` on `./idps_test` (recursive).  
@@ -161,7 +156,7 @@ Extends `watchdog`’s event handler to extract features and feed the detector.
    - `monitor_system_processes()`  
    (Both from `monitor.py`; log to `./logs/`.)
 
-> 🔁 **Design Note**: All components share the *same* detector and response engine — ensuring consistent threat assessment and action.
+> **Design Note**: All components share the *same* detector and response engine — ensuring consistent threat assessment and action.
 
 ---
 
@@ -180,7 +175,7 @@ Runs in background threads; no direct interaction with detector (logs only).
 - Logs any process exceeding thresholds (CPU or MEM %).
 - Writes to `./logs/processes_log.txt`.
 
-> 📌 These are **detection-agnostic** — meant for forensic review or future integration.
+> These are **detection-agnostic** — meant for forensic review or future integration.
 
 ---
 
@@ -219,7 +214,7 @@ Implements concrete defensive actions with OS-aware logic.
   - Windows: `netsh advfirewall firewall add rule ...`
   - Linux: `iptables -A OUTPUT -d <ip> -j DROP`
 
-> 🛡️ **Defense-in-depth**: Your engine doesn’t just quarantine — it *locks*, *kills*, and *blocks* to contain threats.
+>  **Defense-in-depth**: Your engine doesn’t just quarantine — it *locks*, *kills*, and *blocks* to contain threats.
 
 ---
 
@@ -243,7 +238,7 @@ Thread-safe Tkinter GUI that visualizes events in real time.
 #### `start_gui()`  
 Creates app + enters `mainloop()`. Called from `run_idps.py`.
 
-> ✅ **Why it works**: Tkinter’s `after()` + `queue.Queue` = safe cross-thread communication.
+> **Why it works**: Tkinter’s `after()` + `queue.Queue` = safe cross-thread communication.
 
 ---
 
@@ -264,19 +259,19 @@ Simulates 7 realistic scenarios to validate detection/response:
 
 | Test | Behavior | Expected IDPS Reaction |
 |------|----------|------------------------|
-| 1. File Creation | Create 3 files slowly | ✅ Logged, no alert |
-| 2. File Modification | Modify 1 file 5× (0.4s apart) | ✅ Logged, may trigger *medium* if threshold met |
-| 3. File Deletion | Create + delete 1 file | ✅ Logged |
-| 4. File Move | Rename via `shutil.move` | ✅ Logged as "moved" |
-| 5. **High-Frequency Burst** | 20 rapid appends (0.05s) | 🔴 **High threat**: quarantine + lock + kill |
-| 6. **Ransomware Sim** | Create 10 files → overwrite rapidly | 🔴 **High threat**: directory lockdown + process kill |
-| 7. Benign Behavior | Slow, sparse edits | ✅ Logged, no response |
+| 1. File Creation | Create 3 files slowly |   Logged, no alert |
+| 2. File Modification | Modify 1 file 5× (0.4s apart) |   Logged, may trigger *medium* if threshold met |
+| 3. File Deletion | Create + delete 1 file |   Logged |
+| 4. File Move | Rename via `shutil.move` |   Logged as "moved" |
+| 5. **High-Frequency Burst** | 20 rapid appends (0.05s) |   **High threat**: quarantine + lock + kill |
+| 6. **Ransomware Sim** | Create 10 files → overwrite rapidly |   **High threat**: directory lockdown + process kill |
+| 7. Benign Behavior | Slow, sparse edits |   Logged, no response |
 
 - Uses `log_files_state()` to show pre/post file permissions.
 - Auto-skips tests if `idps_test/` missing.
 - Robust error handling (continues on failure).
 
-> 🧪 **Pro Tip**: Run `python test.py` while IDPS is active — watch the GUI light up 🔥 during Tests 5–6.
+>  **Pro Tip**: Run `python test.py` while IDPS is active — watch the GUI light up 🔥 during Tests 5–6.
 
 ---
 
@@ -292,11 +287,11 @@ watchdog==3.0.0
 # (secure-smtplib unused — safe to remove)
 ```
 
-> 📌 Requires Python ≥ 3.8 (for `psutil`, `watchdog`).
+>  Requires Python ≥ 3.8 (for `psutil`, `watchdog`).
 
 ---
 
-## ▶️ Usage Instructions
+##  Usage Instructions
 
 ### 1. Setup
 ```bash
@@ -335,23 +330,23 @@ python test.py
 ```
 Watch the GUI respond in real time — especially during Tests 5 & 6.
 
-### ⚠️ Important Notes
+###  Important Notes
 - **Prevention is active by default** (`dry_run=False` in `idps.py`).  
-  🔒 Files *will* be quarantined/locked during high-threat events.  
+   Files *will* be quarantined/locked during high-threat events.  
   → To test safely, change `dry_run=True` in `idps.py`.
 - Quarantined files go to `./quarantine/` — recover manually if needed.
 - Logs rotate by timestamp; no auto-cleanup (keep for forensics).
 
 ---
 
-## 🎯 Conclusion & Future Work
+##  Conclusion & Future Work
 
 This IDPS demonstrates a **practical, research-grounded approach** to host-based threat prevention:
-- ✅ Adaptive ML + simple heuristics = high detection, low false positives  
-- ✅ Escalating response (lock → quarantine → kill → lockdown)  
-- ✅ Cross-platform, dependency-minimal, and extensible
+-   Adaptive ML + simple heuristics = high detection, low false positives  
+-   Escalating response (lock → quarantine → kill → lockdown)  
+-   Cross-platform, dependency-minimal, and extensible
 
-### 🚀 Suggested Improvements
+###  Suggested Improvements
 | Area | Idea |
 |------|------|
 | **ML** | Add online learning (e.g., `sklearn`’s `partial_fit`), or swap Isolation Forest for LSTM/Transformer for temporal patterns |
@@ -362,18 +357,11 @@ This IDPS demonstrates a **practical, research-grounded approach** to host-based
 
 ---
 
-## 💬 Final Note
+##  Final Note
 
 This system is engineered for **learning, research, and controlled environments** — *not* production deployment without rigorous hardening (e.g., privilege escalation, sandbox escape). But as a teaching tool and prototype? It’s robust, elegant, and deeply instructive.
 
-Well done — and happy defending! 🛡️
+Well done — and happy defending! 
 
 ---
 
-Let me know if you'd like:
-- A `CONTRIBUTING.md` template  
-- CI/CD config (GitHub Actions for testing)  
-- Dockerfile for containerized testing  
-- Documentation on extending the ML model (e.g., adding new features)  
-
-I’m happy to help further.

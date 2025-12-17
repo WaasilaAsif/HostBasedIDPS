@@ -58,7 +58,7 @@ class AdvancedAnomalyDetector:
         if self.model is not None:
             prediction = self.model.predict([feature_vector])
             if prediction[0] == -1:
-                print("🚨 ML Anomaly detected: unusual event pattern!")
+                print("ML Anomaly detected: unusual event pattern!")
                 is_ml_anomaly = True
 
         # burst-based detection
@@ -67,27 +67,6 @@ class AdvancedAnomalyDetector:
         if is_ml_anomaly or is_burst:
             self._handle_threat(path, len(self.event_queue))
 
-    # def _handle_threat(self, path, event_count):
-    #     """
-    #     Trigger prevention based on severity.
-    #     """
-    #     if not self.response_engine or not path:
-    #         return
-
-    #     # 🟡 MEDIUM THREAT
-    #     if event_count >= self.threshold:
-    #         print("[THREAT LEVEL] MEDIUM")
-    #         self.response_engine.lock_file(path)
-
-    #     # 🔴 HIGH THREAT
-    #     if event_count >= self.threshold * 2:
-    #         print("[THREAT LEVEL] HIGH")
-    #         self.response_engine.quarantine_file(path)
-    #         # clear queue after high threat to avoid repeated triggers
-    #         self.event_queue.clear()
-    # detector.py
-
-    # detector.py
     def _handle_threat(self, path, event_count):
         print(f"[DEBUG] Using AdvancedAnomalyDetector from: {__file__}")
 
@@ -98,13 +77,13 @@ class AdvancedAnomalyDetector:
         # Gather all recent file paths in the event queue (within window)
         affected_files = set(p for _, _, p in self.event_queue if p)
     
-        # 🟡 MEDIUM THREAT: Lock all affected files
+        
         if event_count >= self.threshold:
             print(f"[THREAT] MEDIUM – locking {len(affected_files)} files")
             for f in affected_files:
                 self.response_engine.lock_file(f)
     
-        # 🔴 HIGH THREAT: Quarantine all files and lock directory
+        
         if event_count >= self.threshold * 2:
             print(f"[THREAT] HIGH – quarantining {len(affected_files)} files and locking directory")
             for f in affected_files:
