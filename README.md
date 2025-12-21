@@ -357,11 +357,3 @@ This IDPS demonstrates a **practical, research-grounded approach** to host-based
 
 ---
 
-##  Final Note
-
-This system is engineered for **learning, research, and controlled environments** — *not* production deployment without rigorous hardening (e.g., privilege escalation, sandbox escape). But as a teaching tool and prototype? It’s robust, elegant, and deeply instructive.
-
-Well done — and happy defending! 
-
----
-
